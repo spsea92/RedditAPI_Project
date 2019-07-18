@@ -9,7 +9,7 @@ const snoowrap = require('snoowrap');
 
 // New submissions (author, title, and number of comments) by ID
 let postTitleAuthNumOfComments = {};
-r.getNew('mealkits', {limit: 5})
+r.getNew('mealkits', {limit: 10})
   .map(({ id, title, num_comments, author: { name: postAuthor } }) => ({ id, title, num_comments, postAuthor }))
   .then(posts => {
     const commentsPromises = []
@@ -26,76 +26,42 @@ r.getNew('mealkits', {limit: 5})
         })
       commentsPromises.push(commentsPromise)
     })
-    console.log(postTitleAuthNumOfComments)
+    // console.log(postTitleAuthNumOfComments)
     return Promise.all(commentsPromises)
   })
   .then(() => {
+    // console.log(postTitleAuthNumOfComments)
+    // Object.keys(postTitleAuthNumOfComments).forEach(item => console.log(postTitleAuthNumOfComments[item].comments[0]))
+    Object.values(postTitleAuthNumOfComments)
+      .forEach(item => {
+        item.authorComments = item.comments.filter(comment => comment.commentAuthor === item.postAuthor)
+      })
     console.log(postTitleAuthNumOfComments)
+/*     console.log(Object.keys(postTitleAuthNumOfComments).filter(id => {
+      Object.keys(postTitleAuthNumOfComments[id])
+    })) */
+/*     Object.keys(postTitleAuthNumOfComments).forEach(item => 
+      postTitleAuthNumOfComments[item].comments.forEach(comment => {
+        //console.log(comment.commentAuthor)
+        if (comment.commentAuthor === postTitleAuthNumOfComments[item].postAuthor) {
+            console.log("Cool", postTitleAuthNumOfComments[item].postAuthor, comment.commentAuthor)
+        }
+        else {
+          console.log("Nope", postTitleAuthNumOfComments[item].postAuthor, comment.commentAuthor)
+        }
+      })
+    ) */
+/*     console.log(filter(postTitleAuthNumOfComments['cd97m4'].comments, comment => {
+      comment.forEach(commentObj =>{
+        commentObj.commentAuthor
+      })
+    })) */
+/*     postTitleAuthNumOfComments['cd97m4'].comments.forEach(comment => {
+      if (comment.commentAuthor === postTitleAuthNumOfComments['cd97m4'].postAuthor) {
+        console.log(comment.commentAuthor)
+      }
+      else {
+        console.log("No such author")
+      }
+    }) */
   })
-
-// let submissionsAndComments = []
-// r.getNew('mealkits', {limit:1})
-//   .map(post => [post.id, post.title, post.author.name, post.num_comments])
-//   .then(data => {
-//     data.forEach([] => {
-//       let submissionDetail = {
-//         submissionID: datum[0],
-//         submissionTitle: datum[1],
-//         submissionAuthor: datum[2],
-//         commentsOfSubmission: []
-//       }
-//       //submissionsAndComments.push(submissionDetail)
-//       r.getSubmission(datum[0]).comments.map(({ author: { name }, body }) => ({ author, body }))
-//       .then(comments => {
-//         submissionDetail.commentsOfSubmission.push
-//       })
-//         //submissionDetail.commentsOfSubmission.push()
-//         //console.log({author: comment.author.name})
-//         submissionDetail.commentsOfSubmission = Object.assign(submissionDetail.commentsOfSubmission, {
-//           author: comment.author.name, 
-//           commentBody: comment.body
-//         })
-//         // console.log(submissionDetail)
-//       })
-//       submissionsAndComments.push(submissionDetail)
-//       console.log(submissionsDetails)
-
-//     })
-//   })
-
-
-// Array with new submissions IDs
-// let newSubmissionID = []
-// r.getNew('mealkits', {limit: 2})
-//   .map(post => post.id)
-//   .forEach(item => {
-//     let itemInside = []
-//     r.getSubmission(item).comments.forEach(comment => {
-//       itemInside.push({
-//         submissionID: item,
-//         commentAuthor: comment.author.name
-//       })
-//       //console.log(itemInside)
-//       return itemInside
-//     })
-//     .then(console.log(itemInside))
-//     //r.getSubmission(item).comments.then(console.log) //-- Worked!
-//     // r.getSubmission(item).comments.forEach(comment => {
-//     //   newSubmissionID.push({
-//     //     commentAuthor: comment.author.name
-//     //     //commentBody: comment.body
-//     //   })
-//     //   console.log(newSubmissionID)
-//     // })
-//   })
-
-
-
-
-
-// Comments and it's author of a submission
-//r.getSubmission('cbagr0').comments.forEach(comment => console.log(comment.author.name, ":\n", comment.body))
-
-// * Make array of submission IDs
-// * -> Make an array of comments for each submission
-// * -> Keep only comments made by OP
