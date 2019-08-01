@@ -1,4 +1,5 @@
 const snoowrap = require('snoowrap');
+const { connectPromise, MealKitsPost } = require('./db');
 
 const r = new snoowrap({
   userAgent: 'put your user-agent string here',
@@ -15,12 +16,15 @@ Listings will have all of the properties and values for posts.
 
 // New 100 submissions (author, title, and number of comments) by ID
 let listingOfPosts = {};
-r.getNew('mealkits', {limit: 100})
+const redditPromise = r.getNew('mealkits', {limit: 5})
   .map(({ id, title, selftext: postText, url, num_comments, author: { name: postAuthor } }) => ({ id, title, postText, url, num_comments, postAuthor }))
-  .then(posts => {
+
+Promise.all([redditPromise, connectPromise])
+  .then(([posts]) => {
     const commentsPromises = []
     posts.forEach(({ id, title, postText, url, num_comments, postAuthor }) => {
       listingOfPosts[id] = { // Retrieving post's title, author, and the number of comments
+        id,
         title,
         postAuthor,
         num_comments,
@@ -42,9 +46,18 @@ r.getNew('mealkits', {limit: 100})
     return Promise.all(commentsPromises)
   })
   .then(() => {
-    Object.values(listingOfPosts)
-      .forEach(item => { // Creating a property for the post author's replies
+    const savePromises = Object.values(listingOfPosts)
+      .map(item => { // Creating a property for the post author's replies
         item.authorComments = item.comments.filter(comment => comment.commentAuthor === item.postAuthor)
+        return MealKitsPost.findOneAndUpdate({ id: item.id }, item, { upsert: true }).exec()
       })
     console.log(listingOfPosts)
+    return Promise.all(savePromises)
+  })
+  .then(() => {
+    process.exit(0)
+  })
+  .catch(err => {
+    console.error('Error occurred:', err)
+    process.exit(1)
   })
