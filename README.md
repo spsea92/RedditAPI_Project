@@ -1,6 +1,6 @@
 # Reddit API Project
 
-This simple script makes a call to the Reddit API in order to create listings of new posts from the subreddit r/mealkits by using [Snoowrap](https://github.com/not-an-aardvark/snoowrap), a JavaScript API wrapper. The post's information is stored in a NoSQL database and would be used for data analysis. 
+This simple script that makes a call to the Reddit API in order to create listings of new posts from the subreddit r/mealkits by using [Snoowrap](https://github.com/not-an-aardvark/snoowrap), a JavaScript API wrapper. The post's information is stored in a NoSQL database and would be used for data analysis. 
 
 The listing will contain 100 new posts. This number was arbitrary and can be changed by changing the limit:
 ```javascript
