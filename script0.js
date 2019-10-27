@@ -3,9 +3,9 @@ const { connectPromise, MealKitsPost } = require('./db');
 
 const r = new snoowrap({
   userAgent: 'put your user-agent string here',
-  clientId: 'r7GLGBNQBTECDA',
-  clientSecret: 'i91T_SezJ3X6Bs8YKIeoUw-V2ZY',
-  refreshToken: '25765789422-E-9uLN6x02R12YSJQ4NLYOwMJ5o'
+  clientId: 'hidden',
+  clientSecret: 'hidden',
+  refreshToken: 'hidden'
 });
 
 /*
@@ -16,17 +16,18 @@ Listings will have all of the properties and values for posts.
 
 // New 100 submissions (author, title, and number of comments) by ID
 let listingOfPosts = {};
-const redditPromise = r.getNew('mealkits', {limit: 5})
-  .map(({ id, title, selftext: postText, url, num_comments, author: { name: postAuthor } }) => ({ id, title, postText, url, num_comments, postAuthor }))
+const redditPromise = r.getNew('mealkits', {limit: 103})
+  .map(({ id, title, selftext: postText, created_utc, url, num_comments, author: { name: postAuthor } }) => ({ id, title, postText, created_utc, url, num_comments, postAuthor }))
 
 Promise.all([redditPromise, connectPromise])
   .then(([posts]) => {
     const commentsPromises = []
-    posts.forEach(({ id, title, postText, url, num_comments, postAuthor }) => {
+    posts.forEach(({ id, title, postText, created_utc, url, num_comments, postAuthor }) => {
       listingOfPosts[id] = { // Retrieving post's title, author, and the number of comments
         id,
         title,
         postAuthor,
+        created_utc,
         num_comments,
       }
       if (postText === '') { // Retrieving post's image URL if post is image
@@ -51,7 +52,7 @@ Promise.all([redditPromise, connectPromise])
         item.authorComments = item.comments.filter(comment => comment.commentAuthor === item.postAuthor)
         return MealKitsPost.findOneAndUpdate({ id: item.id }, item, { upsert: true }).exec()
       })
-    console.log(listingOfPosts)
+    // console.log(listingOfPosts)
     return Promise.all(savePromises)
   })
   .then(() => {
