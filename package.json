@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/spsea92/RedditAPI_Project",
   "dependencies": {
-    "mongoose": "^5.2.9",
+    "mongoose": "^5.7.5",
     "snoowrap": "^1.18.0"
   }
 }
